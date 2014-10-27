@@ -1,22 +1,33 @@
 #ifndef AUTOMATO_H
 #define AUTOMATO_H
 
-#include <vector>
-using std::vector;
+#include <set>
+using std::set;
+
+using std::pair;
 
 #include "estado.h"
+struct representacaoDoEstado{
+    unordered_map<Simbolo, set<Estado>> map;
+};
 
 class Automato
 {
-    vector<Estado> _estados;
+    set<Estado> _estados, _finais;
+    Estado q0;
+    set<Simbolo> alfabeto;
 
 public:
 
     Automato();
+    Automato(set<Simbolo> alf, Estado inicial);
+    Automato determinizar();
 
-    Estado getEstado(int i);
+/*
+    Estado getEstado(int i);*/
     void add(Estado e);
-    void remove(string nome);
-};
+    /*void remove(string nome);*/
+
+    };
 
 #endif

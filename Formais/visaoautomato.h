@@ -3,6 +3,19 @@
 
 #include <QMainWindow>
 
+#include <qinputdialog.h>
+
+#include <QStandardItemModel>
+
+#include "iostream"
+#include <vector>
+#include <string>
+
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+
 namespace Ui {
 class VisaoAutomato;
 }
@@ -18,6 +31,8 @@ public:
 
 private:
     Ui::VisaoAutomato *ui;
+
+    vector<string> separarParametros(string comando, string delimiter);
 };
 
 #endif // VISAOAUTOMATO_H

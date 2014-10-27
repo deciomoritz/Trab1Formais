@@ -1,36 +1,42 @@
 #ifndef ESTADO_H
 #define ESTADO_H
-
+#include <algorithm>
 #include <string>
 using std::string;
-
 #include <unordered_map>
 using std::unordered_map;
+#include <set>
+using std::set;
 
-#include <vector>
-using std::vector;
-
-enum Tipo{Final, Inicial, Intermediario};
 typedef char Simbolo;
-
-class Estado;
-
-struct EstadosAdjacentes{
-    vector<Estado*> _adj;
-};
 
 class Estado
 {
     string _nome;
-    Tipo _tipo;
-    unordered_map<Simbolo, EstadosAdjacentes > _delta; //estrutura que mapeia um Simbolo(char) para um ConjuntoDeEstados
-
+    unordered_map<Simbolo,set<Estado*>> _delta; //estrutura que mapeia um Simbolo(char) para um ConjuntoDeEstados
 public:
 
     Estado();
-    Estado(string nome, Tipo tipo);
+    Estado(Simbolo nome);
+    Estado(string nome, unordered_map<Simbolo, set<Estado*>> delta);
+    set<Estado*> fecho(set<Estado*> visitados);
+    string nome() const;
+    Estado copiarEstado() const;
+    set<Estado*> getTransicao(Simbolo s) const;
 
-    string nome();
+    bool operator<(const Estado& e) const{
+       return _nome<e._nome;
+    }
+
+    bool operator==(const Estado& e) const{
+       return _nome==e._nome;
+    }
+
+    //gambs do décio
+    set<Estado*> fecho();
+    Estado(set<Estado*> estados);
+
+    void insereTransicao(Simbolo s, Estado * q);
 };
 
 #endif // ESTADO_H
