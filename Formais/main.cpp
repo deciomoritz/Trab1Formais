@@ -1,5 +1,4 @@
-#include "visaoautomato.h"
-#include <QApplication>
+
 
 #include <iostream>
 
@@ -15,23 +14,20 @@ int main(int argc, char *argv[])
 //    VisaoAutomato w;
 //    w.show();
 
-//    return a.exec();
-//     Estado a('A'),b('B'),c('C'), d('D');
-//     a.insereTransicao('&', &b);
-//     b.insereTransicao('&', &a);
-//     b.insereTransicao('&', &c);
-//     c.insereTransicao('&', &d);
-//     d.insereTransicao('&', &b);
-//     d.insereTransicao('&', &a);
-//     set<Estado*> fecho;
+////    return a.exec();
+     Estado a('A'),b('B'),c('C'), d('D');
+     a.insereTransicao('&', &b);
+     b.insereTransicao('&', &c);
+     c.insereTransicao('&', &d);
+     d.insereTransicao('&', &b);
+     set<Estado*> fecho;
 
-//     fecho = a.fecho();
-
-//     for(auto iter = fecho.begin(); iter != fecho.end();iter++){
-//        Estado * e = *iter;
-//        cout << e->nome();
-//     }
-
+     fecho = b.fecho();
+     for(auto iter = fecho.begin(); iter != fecho.end();iter++){
+        Estado * e = *iter;
+        cout << e->nome();
+     }
+/*
     //exemplo linguagem (a,b)*abb q o olinto passou
      Estado a('A'),b('B'),c('C'), d('D');
      a.insereTransicao('a', &a);
@@ -55,6 +51,6 @@ int main(int argc, char *argv[])
 //        cout << e->nome();
 //    }
 
-    af.determinizar();
-
+ //   af.determinizar();
+*/
 }

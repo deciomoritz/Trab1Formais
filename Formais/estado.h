@@ -19,7 +19,7 @@ public:
     Estado();
     Estado(Simbolo nome);
     Estado(string nome, unordered_map<Simbolo, set<Estado*>> delta);
-    set<Estado*> fecho(set<Estado*> visitados);
+    set<Estado*> fecho();
     string nome() const;
     Estado copiarEstado() const;
     set<Estado*> getTransicao(Simbolo s) const;
@@ -31,9 +31,6 @@ public:
     bool operator==(const Estado& e) const{
        return _nome==e._nome;
     }
-
-    //gambs do décio
-    set<Estado*> fecho();
     Estado(set<Estado*> estados);
 
     void insereTransicao(Simbolo s, Estado * q);

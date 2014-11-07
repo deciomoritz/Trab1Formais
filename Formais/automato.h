@@ -8,7 +8,7 @@ using std::pair;
 
 #include "estado.h"
 struct representacaoDoEstado{
-    unordered_map<Simbolo, set<Estado>> map;
+    unordered_map<Estado*, set<Estado*>> map;
 };
 
 class Automato
@@ -21,6 +21,7 @@ public:
 
     Automato();
     Automato(set<Simbolo> alf, Estado inicial);
+    representacaoDoEstado fecho_K();
     Automato determinizar();
 
 /*

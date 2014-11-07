@@ -23,25 +23,22 @@ Estado Estado::copiarEstado() const{
 set<Estado*> Estado::getTransicao(Simbolo s) const{
 	return _delta.at(s);
 }
-
-set<Estado*> Estado::fecho(set<Estado*> visitados){
-
-    visitados.insert(this);
-
-    set<Estado*> adjacentes = _delta['&'];
-    for(auto iterAdj = adjacentes.begin(); iterAdj != adjacentes.end();iterAdj++){
-        Estado * adj = *iterAdj;
-
-        if(visitados.find(adj) == visitados.end()){//se n contém
-            return adj->fecho(visitados);
-        }
-    }
-    return visitados;
-}
-
 set<Estado*> Estado::fecho(){
-    set<Estado*> visitados;
-    return fecho(visitados);
+	set<Estado*> N0,N1, temp;
+	N0.insert(this);
+	bool different = true;
+	while(different){
+		N1 = N0;
+		for(auto A = N0.begin(); A != N0.end();A++){
+			temp = (*(*A))._delta['&'];
+			N1.insert(temp.begin(),temp.end());
+		}
+		if(N1==N0){
+			different = false;
+		}
+		N0 = N1;
+	};
+	return N1;
 }
 
 void Estado::insereTransicao(Simbolo s, Estado * q){
