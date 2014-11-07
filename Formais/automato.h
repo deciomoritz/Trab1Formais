@@ -21,6 +21,7 @@ public:
 
     Automato();
     Automato(set<Simbolo> alf, Estado inicial);
+    Automato(set<Estado> estados, set<Simbolo> alf, Estado inicial, set<Estado> finais);
     representacaoDoEstado fecho_K();
     Automato determinizar();
 

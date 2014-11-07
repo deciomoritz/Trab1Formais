@@ -16,10 +16,6 @@ string Estado::nome() const{
     return _nome;
 }
 
-Estado Estado::copiarEstado() const{
-    return Estado(this->_nome, this->_delta);
-}
-
 set<Estado*> Estado::getTransicao(Simbolo s) const{
 	return _delta.at(s);
 }

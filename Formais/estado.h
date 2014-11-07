@@ -21,7 +21,6 @@ public:
     Estado(string nome, unordered_map<Simbolo, set<Estado*>> delta);
     set<Estado*> fecho();
     string nome() const;
-    Estado copiarEstado() const;
     set<Estado*> getTransicao(Simbolo s) const;
 
     bool operator<(const Estado& e) const{
