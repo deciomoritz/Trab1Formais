@@ -15,6 +15,8 @@
 
 using namespace std;
 
+const char concatenacao = 234;
+
 class ExpressaoRegular
 {
 

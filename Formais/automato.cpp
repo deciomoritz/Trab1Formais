@@ -35,6 +35,12 @@ representacaoDoEstado Automato::fecho_K(){
 }*/
 
 void Automato::add(Estado *e){
+    for(auto iterador = _estados.begin(); iterador != _estados.end();iterador++){
+        Estado * existente = *iterador;
+
+        if(existente->nome().compare(e->nome()) == 0)
+            return;
+    }
     _estados.insert(e);
 }
 /*
@@ -119,10 +125,14 @@ Automato Automato::determinizar(){
 	return deterministico;
 }
 
+    set<Estado*> Automato::getEstados(){return _estados;}
 
-set<Estado*> Automato::getEstados(){return _estados;}
     set<Estado*> Automato::getFinais(){return _finais;}
+
     set<Simbolo> Automato::getAlfabeto(){return alfabeto;}
+
     Estado* Automato::getInicial(){return q0;}
+
+
 /*
 Automato Automato::getMinimo();*/

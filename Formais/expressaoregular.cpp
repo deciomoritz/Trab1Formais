@@ -20,13 +20,13 @@ string ExpressaoRegular::preProcessar(char * er){
 
         if(anterior != '|' && anterior != '*' && anterior != '(' && anterior != ')' && anterior != NULL &&
                 atual != '|' && atual != '*' && atual != '(' && atual != ')' && atual != NULL){
-            novaER.insert(pos, 1,'.');
+            novaER.insert(pos, 1,concatenacao);
             pos++;
         }else if(anterior == (')') && atual == ('(')){
-            novaER.insert(pos, 1,'.');
+            novaER.insert(pos, 1,concatenacao);
             pos++;
         }else if(anterior == '*' && atual != NULL && atual != '|'){
-            novaER.insert(pos, 1,'.');
+            novaER.insert(pos, 1,concatenacao);
             pos++;
         }
         pos++;
@@ -54,6 +54,8 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
 
     unordered_map<string, Estado*> nomeParaEstado;
 
+    set<Simbolo> alfabeto;
+
     for(int i=0;i<pos;i=i+3){
         char c = ret[i] + 64;
         string nome(1,c);
@@ -68,6 +70,10 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
         e = new Estado(nome2);
 
         af.add(e);
+
+        string simbolo = string(1,ret[i+1]);
+        if(simbolo.compare(string(1,'&')) != 0)
+            alfabeto.insert(simbolo);
     }
 
     set<Estado*> estados = af.getEstados();
@@ -77,9 +83,9 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
 
         nomeParaEstado.insert({e->nome(), e});
     }
-
+    Estado * e;
     for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
-        Estado * e = (*iterador);
+        e = (*iterador);
 
         for(int i=0;i<pos;i=i+3){
             //printf("%d     --%c-->      %d\n",ret[i],ret[i+1],ret[i+2]);
@@ -91,12 +97,17 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
             string nome2(1,c2);
             if(e->nome().compare(nome2) == 0){
                 char simbolo = ret[i+1];
-                e->insereTransicao(string(1,c), para);
+                e->insereTransicao(string(1,simbolo), para);
             }
 
         }
     }
-    return af;
+    Estado * inicial = nomeParaEstado.find("A")->second;
+
+    set<Estado*> finais;
+    finais.insert(e);
+
+    return Automato(af.getEstados(), alfabeto, inicial, finais);
 }
 
 void ExpressaoRegular::_ERParaAFND(int st,int p,char *s){
@@ -111,7 +122,7 @@ void ExpressaoRegular::_ERParaAFND(int st,int p,char *s){
             ret[pos++]=*s;
             ret[pos++]=++sc;
         }
-        if(*s=='.')
+        if(*s==concatenacao)
         {
             sp=sc;
             ret[pos++]=sc;

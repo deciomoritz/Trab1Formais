@@ -30,7 +30,6 @@ public:
     void add(Estado *e);
     /*void remove(string nome);*/
 
-
     set<Estado*> getEstados();
     set<Estado*> getFinais();
     set<Simbolo> getAlfabeto();
