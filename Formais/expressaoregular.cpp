@@ -70,13 +70,15 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
         af.add(e);
     }
 
-    for(auto iterador = af.getEstados().begin(); iterador != af.getEstados().end();iterador++){
+    set<Estado*> estados = af.getEstados();
+
+    for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
         Estado * e = *iterador;
 
         nomeParaEstado.insert({e->nome(), e});
     }
 
-    for(auto iterador = af.getEstados().begin(); iterador != af.getEstados().end();iterador++){
+    for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
         Estado * e = (*iterador);
 
         for(int i=0;i<pos;i=i+3){
@@ -88,7 +90,8 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
             char c2 = ret[i] + 64;
             string nome2(1,c2);
             if(e->nome().compare(nome2) == 0){
-                e->insereTransicao(ret[i+1], para);
+                char simbolo = ret[i+1];
+                e->insereTransicao(string(1,c), para);
             }
 
         }
