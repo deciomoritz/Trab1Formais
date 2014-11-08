@@ -8,28 +8,33 @@ using std::pair;
 
 #include "estado.h"
 struct representacaoDoEstado{
-    unordered_map<Estado*, set<Estado*>> map;
+    unordered_map<string, set<Estado*>> map;
 };
 
 class Automato
 {
-    set<Estado> _estados, _finais;
-    Estado q0;
+    set<Estado*> _estados, _finais;
+    Estado* q0;
     set<Simbolo> alfabeto;
 
 public:
 
     Automato();
-    Automato(set<Simbolo> alf, Estado inicial);
-    Automato(set<Estado> estados, set<Simbolo> alf, Estado inicial, set<Estado> finais);
+    Automato(set<string> alf, Estado *inicial);
+    Automato(set<Estado*> estados, set<Simbolo> alf, Estado *inicial, set<Estado*> finais);
     representacaoDoEstado fecho_K();
     Automato determinizar();
-
+    void deletar();
 /*
     Estado getEstado(int i);*/
-    void add(Estado e);
+    void add(Estado *e);
     /*void remove(string nome);*/
 
+
+    set<Estado*> getEstados();
+    set<Estado*> getFinais();
+    set<Simbolo> getAlfabeto();
+    Estado* getInicial();
     };
 
 #endif
