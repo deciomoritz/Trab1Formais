@@ -24,6 +24,9 @@ public:
     Automato(set<Estado*> estados, set<Simbolo> alf, Estado *inicial, set<Estado*> finais);
     representacaoDoEstado fecho_K();
     Automato determinizar();
+
+    Automato complementar();
+
     void deletar();
 /*
     Estado getEstado(int i);*/

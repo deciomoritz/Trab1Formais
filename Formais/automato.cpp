@@ -125,13 +125,28 @@ Automato Automato::determinizar(){
 	return deterministico;
 }
 
-    set<Estado*> Automato::getEstados(){return _estados;}
+Automato Automato::complementar(){
+    set<Estado*> finais = _estados;
 
-    set<Estado*> Automato::getFinais(){return _finais;}
+    for(auto iter = finais.begin(); iter != finais.end();iter++){
+        Estado * e = *iter;
+        if(_finais.find(e) != _finais.end())
+            finais.erase(e);
+    }
 
-    set<Simbolo> Automato::getAlfabeto(){return alfabeto;}
+    set<Simbolo> alfabeto = this->alfabeto;
+    Estado * inicial = q0;
 
-    Estado* Automato::getInicial(){return q0;}
+    return Automato(_estados, alfabeto, inicial, finais);
+}
+
+set<Estado*> Automato::getEstados(){return _estados;}
+
+set<Estado*> Automato::getFinais(){return _finais;}
+
+set<Simbolo> Automato::getAlfabeto(){return alfabeto;}
+
+Estado* Automato::getInicial(){return q0;}
 
 
 /*
