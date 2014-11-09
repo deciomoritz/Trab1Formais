@@ -139,7 +139,44 @@ Automato Automato::complementar(){
 
     return Automato(_estados, alfabeto, inicial, finais);
 }
+Automato Automato::uniao(Automato a, Automato b){
+    Automato novo_a = a.determinizar();
+    Automato novo_b = b.determinizar();
+    set<Estado*> new_estados, new_finais, old_finais_a;
+    Estado *problem = (*(--(novo_a._estados).end()));
+    string name_problem = problem->nome();
+    char nome_c = name_problem.c_str()[0];
+    string nome;
 
+    Estado *new_q0, *old_q0, *new_final;
+    nome = string(1,++nome_c);
+    new_q0= new Estado(nome);
+    nome = string(1,++nome_c);
+    new_final= new Estado(nome);
+    old_q0 = novo_a.q0;
+    novo_a.q0 = new_q0;
+    old_finais_a = novo_a._finais;
+    novo_a._estados.insert(new_q0);
+    novo_a._estados.insert(new_final);
+    novo_a._finais.clear();
+    novo_a._finais.insert(new_final);
+    for(auto A = novo_b._estados.begin(); A != novo_b._estados.end();A++){
+        nome = string(1,++nome_c);
+        (*A)->renomear(nome);
+        novo_a._estados.insert(*A);
+    }
+    for(auto A = novo_b._finais.begin(); A != novo_b._finais.end();A++){
+        old_finais_a.insert(*A);
+    }
+    new_q0->insereTransicao("&", old_q0);
+    new_q0->insereTransicao("&", novo_b.q0);
+    for(auto A = old_finais_a.begin(); A !=old_finais_a.end();A++){
+        (*A)->insereTransicao("&", new_final);
+    }
+    Automato retorno = novo_a.determinizar();
+    novo_a.deletar();
+    return retorno;
+}
 set<Estado*> Automato::getEstados(){return _estados;}
 
 set<Estado*> Automato::getFinais(){return _finais;}

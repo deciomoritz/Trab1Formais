@@ -17,10 +17,10 @@ using std::set;
 typedef string Simbolo;
 class Estado
 {
-public:
+
     string _nome;
     unordered_map<string,set<Estado*>> _delta; //estrutura que mapeia um Simbolo(char) para um ConjuntoDeEstados
-
+public:
     Estado();
     Estado(string nome);
     Estado(string nome, unordered_map<string, set<Estado*>> delta);
@@ -35,7 +35,7 @@ public:
        return _nome.compare(e._nome)<0;
     }
     Estado(set<Estado*> estados);
-
+    void renomear(string s);
     void insereTransicao(Simbolo s, Estado * q);
 };
 //struct less_pointer

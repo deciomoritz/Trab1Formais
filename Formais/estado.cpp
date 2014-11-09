@@ -15,7 +15,9 @@ Estado::Estado(string nome, unordered_map<string, set<Estado*> > delta){
 string Estado::nome() const {
     return _nome;
 }
-
+void Estado::renomear(string s){
+    _nome = s;
+}
 set<Estado*> Estado::getTransicao(string s) {
     set<Estado*>novo;
     if(_delta.find(s)==_delta.end()){

@@ -26,7 +26,7 @@ public:
     Automato determinizar();
 
     Automato complementar();
-
+    static Automato uniao(Automato a, Automato b);
     void deletar();
 /*
     Estado getEstado(int i);*/
