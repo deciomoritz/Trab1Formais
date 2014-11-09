@@ -27,6 +27,8 @@ public:
 
     Automato complementar();
     static Automato uniao(Automato a, Automato b);
+    static Automato interseccao(Automato a, Automato b);
+    static Automato diferenca(Automato a, Automato b);
     void deletar();
 /*
     Estado getEstado(int i);*/

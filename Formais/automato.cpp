@@ -5,7 +5,6 @@ void Automato::deletar(){
        for(auto A = _estados.begin(); A != _estados.end();A++){
            delete *A;
        }
-       cout<< "DELETADO" << endl;
 };
 Automato::Automato(set<string> alf, Estado *inicial){
     alfabeto = alf;
@@ -126,18 +125,19 @@ Automato Automato::determinizar(){
 }
 
 Automato Automato::complementar(){
-    set<Estado*> finais = _estados;
+    Automato determinizado = this->determinizar();
+    set<Estado*> finais = determinizado._estados;
 
     for(auto iter = finais.begin(); iter != finais.end();iter++){
         Estado * e = *iter;
-        if(_finais.find(e) != _finais.end())
+        if(determinizado._finais.find(e) != determinizado._finais.end())
             finais.erase(e);
     }
 
     set<Simbolo> alfabeto = this->alfabeto;
-    Estado * inicial = q0;
-
-    return Automato(_estados, alfabeto, inicial, finais);
+    Estado * inicial = determinizado.q0;
+    Automato retorno(determinizado._estados, alfabeto, inicial, finais);
+    return retorno.determinizar();
 }
 Automato Automato::uniao(Automato a, Automato b){
     Automato novo_a = a.determinizar();
@@ -177,6 +177,28 @@ Automato Automato::uniao(Automato a, Automato b){
     novo_a.deletar();
     return retorno;
 }
+Automato Automato::interseccao(Automato a, Automato b){
+    Automato compl_a = a.complementar();
+    Automato compl_b = b.complementar();
+    Automato uniao_complementos= uniao(compl_a,compl_b );
+    Automato interseccao = uniao_complementos.complementar();
+    Automato retorno = interseccao.determinizar();
+    compl_a.deletar();
+    compl_b.deletar();
+    uniao_complementos.deletar();
+    interseccao.deletar();
+    return retorno;
+}
+
+Automato Automato::diferenca(Automato a, Automato b){
+    Automato compl_b = b.complementar();
+    Automato inters = interseccao(a, compl_b);
+    Automato retorno = inters.determinizar();
+    compl_b.deletar();
+    inters.deletar();
+    return retorno;
+}
+
 set<Estado*> Automato::getEstados(){return _estados;}
 
 set<Estado*> Automato::getFinais(){return _finais;}
