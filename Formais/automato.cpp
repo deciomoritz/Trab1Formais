@@ -211,6 +211,84 @@ bool Automato::equivalencia(Automato b){
     return retorno;
 }
 
+Automato Automato::minimizar(){
+    set<Estado*> finais = _finais;
+
+    set<Estado*> nFinais = _estados;
+    for(auto iter = finais.begin(); iter != finais.end();iter++){
+        Estado * e = *iter;
+        nFinais.erase(e);
+    }
+    //criar duas classes de equivalencia iniciais
+
+    set<set<Estado*>> classesDeEquivalencia;
+    classesDeEquivalencia.insert(finais);
+    classesDeEquivalencia.insert(nFinais);
+
+    set<set<Estado*>> novoClassesDeEquivalencia;
+    novoClassesDeEquivalencia.insert(finais);
+    novoClassesDeEquivalencia.insert(nFinais);
+
+    do{
+        for(auto iter = novoClassesDeEquivalencia.begin(); iter != novoClassesDeEquivalencia.end();iter++){
+            set<Estado*> classe = *iter;
+            for(auto iter2 = classe.begin(); iter2 != classe.end();iter2++){//para cada elemento da classe
+                Estado * a = *iter2;
+                bool apagueiAlguem = false;
+                for(auto iter3 = classe.begin(); iter3 != classe.end();iter3++){//comparar 'a' com todos os elementos desta classe
+                    Estado * b = *iter3;
+
+                    if(!pertenceAClasseDeEquivalencia(classe, a, b)){
+                        //classe.erase(b);
+                        bool bPertenceANgm = true;
+                        for(auto iter4 = novoClassesDeEquivalencia.begin(); iter4 != novoClassesDeEquivalencia.end();iter4++){
+                            set<Estado*> classe2 = *iter;
+                            if(pertenceAClasseDeEquivalencia(classe2, b)){
+                                classe2.insert(b);
+                                classe.erase(iter3++);//b
+                                apagueiAlguem = true;
+                                bPertenceANgm = false;
+                            }
+                        }
+                        if(bPertenceANgm){
+                            set<Estado*> novaClasse;
+                            novaClasse.insert(b);
+                            classe.erase(iter3++);//b
+                            apagueiAlguem = true;
+                            novoClassesDeEquivalencia.insert(novaClasse);
+                        }
+                    }
+                    if(apagueiAlguem)
+                        iter2++;
+                }
+            }
+        }
+    }while(classesDeEquivalencia != novoClassesDeEquivalencia);
+}
+
+bool Automato::pertenceAClasseDeEquivalencia(set<Estado*> classe, Estado * a, Estado * b){
+    for(auto iter4 = alfabeto.begin(); iter4 != alfabeto.end();iter4++){//para cada simbolo do alfabeto
+        Simbolo simbolo = *iter4;
+        set<Estado*> _alcancavelA = a->getTransicao(simbolo);
+        set<Estado*> _alcancavelB = b->getTransicao(simbolo);
+        Estado * alcancavelA = *_alcancavelA.begin(); //esses conjuntos deverão conter só um elemento
+        Estado * alcancavelB = *_alcancavelB.begin(); //pois o AF é determinístico
+
+        if(classe.find(alcancavelA) != classe.end() || classe.find(alcancavelB) != classe.end())
+            return false;
+    }
+    return true;
+}
+
+bool Automato::pertenceAClasseDeEquivalencia(set<Estado*> classeDeEquivalencia, Estado * a){
+    for(auto iter = classeDeEquivalencia.begin(); iter != classeDeEquivalencia.end();iter++){
+        Estado * e = *iter;
+        if(!pertenceAClasseDeEquivalencia(classeDeEquivalencia, a, e))
+            return false;
+    }
+    return true;
+}
+
 set<Estado*> Automato::getEstados(){return _estados;}
 
 set<Estado*> Automato::getFinais(){return _finais;}

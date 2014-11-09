@@ -31,6 +31,11 @@ public:
     static Automato diferenca(Automato a, Automato b);
     bool equivalencia(Automato b);
     void deletar();
+
+    Automato minimizar();
+    bool pertenceAClasseDeEquivalencia(set<Estado*> classeDeEquivalencia, Estado * a, Estado * b);
+    bool pertenceAClasseDeEquivalencia(set<Estado*> classeDeEquivalencia, Estado * a);
+
 /*
     Estado getEstado(int i);*/
     void add(Estado *e);
