@@ -29,6 +29,7 @@ public:
     static Automato uniao(Automato a, Automato b);
     static Automato interseccao(Automato a, Automato b);
     static Automato diferenca(Automato a, Automato b);
+    bool equivalencia(Automato b);
     void deletar();
 /*
     Estado getEstado(int i);*/

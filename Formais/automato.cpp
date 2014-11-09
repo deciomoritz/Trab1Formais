@@ -199,6 +199,18 @@ Automato Automato::diferenca(Automato a, Automato b){
     return retorno;
 }
 
+bool Automato::equivalencia(Automato b){
+    Automato dir = diferenca(*this,b);
+    Automato esq = diferenca(b,*this);
+    set<Estado*> finais;
+    finais.insert(dir._finais.begin(),dir._finais.end());
+    finais.insert(esq._finais.begin(),esq._finais.end());
+    bool retorno = finais.empty();
+    dir.deletar();
+    esq.deletar();
+    return retorno;
+}
+
 set<Estado*> Automato::getEstados(){return _estados;}
 
 set<Estado*> Automato::getFinais(){return _finais;}
