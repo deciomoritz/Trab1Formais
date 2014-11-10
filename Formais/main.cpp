@@ -1,12 +1,51 @@
-
-
 #include <iostream>
 
 #include "estado.h"
 #include "automato.h"
-#include "mainwindow.h"
+#include "expressaoregular.h"
+
+#include "visaoautomato.h"
+
+#include <QApplication>
+
 using std::cout;
 using std::endl;
+
+set<int> procura_string(string padrao, string texto){
+    set<int> posicoes;
+    ExpressaoRegular er;
+    Automato maq_temp = er.ERParaAFND(padrao);
+    Automato maq = maq_temp.determinizar();
+    Estado *atual;
+    set<Estado*> temp,finais;
+    finais = maq.getFinais();
+    Estado *proximo;
+    set<string> alfabeto = maq.getAlfabeto();
+    for(int i = 0;i<texto.length();i++){\
+        proximo = maq.getInicial();
+        for(int j =i; j<texto.length();j++){
+            atual = proximo;
+            string entrada = string(1,texto[j]);
+            if(alfabeto.find(entrada)==alfabeto.end()){
+                atual = maq.getInicial();
+                break;
+            }
+            temp = atual->getTransicao(entrada);
+            proximo = *(temp.begin());
+            if(finais.find(proximo)!=finais.end()){
+                i=j-padrao.length()+1;
+                posicoes.insert(i);
+                j = texto.length();
+            }
+        }
+    }
+    if(posicoes.empty()){
+        posicoes.insert(-1);
+    }
+    maq.deletar();
+    maq_temp.deletar();
+    return posicoes;
+}
 
 void print_automato(Automato af){
     set<Estado*> K = af.getEstados();
@@ -40,76 +79,9 @@ void print_automato(Automato af){
 }
 int main(int argc, char *argv[])
 {
-//    QApplication a(argc, argv);
-//    VisaoAutomato w;
-//    w.show();
+    QApplication a(argc, argv);
+    VisaoAutomato visao;
+    visao.show();
 
-////    return a.exec();
-     Estado a("A"),b("B"),c("C"), d("D");
-     a.insereTransicao("&", &b);
-     a.insereTransicao("&", &d);
-     a.insereTransicao("a", &a);
-     a.insereTransicao("b", &a);
-     b.insereTransicao("a", &c);
-     d.insereTransicao("b", &d);
-     d.insereTransicao("b", &b);
-     set<Estado*> ashua;
-     ashua.insert(&a);
-     ashua.insert(&b);
-     ashua.insert(&c);
-             for(auto iter = ashua.begin(); iter != ashua.end();iter++){
-                Estado * e = *iter;
-                cout << e->nome() << endl;
-             }
-    // b<a; a<b;b<c;c<b;
-     set<Estado*> fecho;
-     set<Estado*> estados;
-     estados.insert(&a);
-     estados.insert(&b);
-     estados.insert(&c);
-     estados.insert(&d);
-     set<Simbolo> alf;
-     alf.insert("a");
-     alf.insert("b");
-     set<Estado*> finais;
-     finais.insert(&d);
-
-     /*fecho = a.fecho();
-     for(auto iter = fecho.begin(); iter != fecho.end();iter++){
-        Estado * e = *iter;
-        cout << e->nome() << endl;
-     }*/
-     Automato afnd(estados, alf, &a,finais);
-     print_automato(afnd);
-     Automato mortal = afnd.determinizar();
-     print_automato(mortal);
-/*
-    //exemplo linguagem (a,b)*abb q o olinto passou
-     Estado a('A'),b('B'),c('C'), d('D');
-     a.insereTransicao('a', &a);
-     a.insereTransicao('a', &b);
-     a.insereTransicao('b', &a);
-     b.insereTransicao('b', &c);
-     c.insereTransicao('b', &d);
-
-    set<Simbolo> alfabeto;
-    alfabeto.insert('a');
-    alfabeto.insert('b');
-
-    Automato af(alfabeto, a);
-    af.add(b);
-    af.add(c);
-
-//    set<Estado*> fecho = a.fecho();
-
-//    for(auto iter = fecho.begin(); iter != fecho.end();iter++){
-//        Estado * e = *iter;
-//        cout << e->nome();
-//    }
-
- //   af.determinizar();
-*/
-     //afnd.deletar();
-     mortal.deletar();
-     cout << "ao menos acabou" << endl;
+    return a.exec();
 }

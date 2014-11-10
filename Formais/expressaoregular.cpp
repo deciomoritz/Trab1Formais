@@ -18,14 +18,20 @@ string ExpressaoRegular::preProcessar(char * er){
         atual = *it;
         anterior = *(it-1);
 
-        if(anterior != '|' && anterior != '*' && anterior != '(' && anterior != ')' && anterior != NULL &&
-                atual != '|' && atual != '*' && atual != '(' && atual != ')' && atual != NULL){
+        if(anterior != '|' && anterior != '*' && anterior != '(' && anterior != ')' && anterior != NULL && anterior != '?' &&
+                atual != '|' && atual != '*' && atual != '(' && atual != ')' && atual != '?' && atual != NULL){
             novaER.insert(pos, 1,concatenacao);
             pos++;
         }else if(anterior == (')') && atual == ('(')){
             novaER.insert(pos, 1,concatenacao);
             pos++;
-        }else if(anterior == '*' && atual != NULL && atual != '|'){
+        }else if(anterior == '*' && atual != NULL && atual != '|' && atual != ')' && atual != '?'){
+            novaER.insert(pos, 1,concatenacao);
+            pos++;
+        }else if(anterior == (')') && atual != NULL && atual != '|' && atual != ')' && atual != '(' && atual != '*' && atual != '?'){
+            novaER.insert(pos, 1,concatenacao);
+            pos++;
+        }else if(anterior == ('?') && atual != NULL && atual != '|' && atual != ')' && atual != '*' && atual != '?'){
             novaER.insert(pos, 1,concatenacao);
             pos++;
         }
@@ -55,12 +61,15 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
     unordered_map<string, Estado*> nomeParaEstado;
 
     set<Simbolo> alfabeto;
-
+    Estado *final = new Estado("A");
     for(int i=0;i<pos;i=i+3){
         char c = ret[i] + 64;
         string nome(1,c);
 
         Estado * e = new Estado(nome);
+
+        if(nome.compare(final->nome()) > 0)
+            final = e;
 
         af.add(e);
 
@@ -68,6 +77,9 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
         string nome2(1,c);
 
         e = new Estado(nome2);
+
+        if(nome2.compare(final->nome()) > 0)
+            final = e;
 
         af.add(e);
 
@@ -105,7 +117,7 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
     Estado * inicial = nomeParaEstado.find("A")->second;
 
     set<Estado*> finais;
-    finais.insert(e);
+    finais.insert(final);
 
     return Automato(af.getEstados(), alfabeto, inicial, finais);
 }
@@ -130,10 +142,17 @@ void ExpressaoRegular::_ERParaAFND(int st,int p,char *s){
             ret[pos++]=++sc;
             sp=sc;
         }
+        if(*s=='?')
+        {
+            ret[pos++]=sp;
+            ret[pos++]='&';
+            ret[pos++]=sc;
+        }
         if(*s=='|')
         {
             sp=st;
-            fs[fsc++]=sc;}
+            fs[fsc++]=sc;
+        }
         if(*s=='*')
         {
             ret[pos++]=sc;
@@ -172,4 +191,8 @@ void ExpressaoRegular::_ERParaAFND(int st,int p,char *s){
     ret[pos++]=sc-1;
     ret[pos++]='&';
     ret[pos++]=sc;
+
+    for (int i = 0; i < ret.size(); ++i) {
+        cout << ret[i] << endl;
+    }
 }

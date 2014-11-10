@@ -19,9 +19,7 @@ const char concatenacao = 234;
 
 class ExpressaoRegular
 {
-
     void _ERParaAFND(int st,int p,char *s);
-
 
     std::vector<int> ret;
     int pos;

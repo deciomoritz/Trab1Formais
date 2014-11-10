@@ -34,10 +34,17 @@ public:
        cout << " = " <<(this->nome().compare(e.nome())<0) << endl;*/
        return _nome.compare(e._nome)<0;
     }
+
+    bool operator==(const Estado& e) {
+        return _nome.compare(e.nome()) == 0;
+    }
+
     Estado(set<Estado*> estados);
     void renomear(string s);
     void insereTransicao(Simbolo s, Estado * q);
+
 };
+
 //struct less_pointer
 //{
 //    bool operator()(Estado* const& lhs, Estado* const& rhs)
