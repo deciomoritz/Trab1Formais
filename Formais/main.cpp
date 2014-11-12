@@ -79,9 +79,20 @@ void print_automato(Automato af){
 }
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    VisaoAutomato visao;
-    visao.show();
+//    QApplication a(argc, argv);
+//    VisaoAutomato visao;
+//    visao.show();
+//    return a.exec();
 
-    return a.exec();
+//    Arvore a;
+//    a.montarArvore("(aa|bb|(ab)(aa|bb)*(ab|ba))*");
+
+    ExpressaoRegular er;
+//    er.ERParaAFND3("(((a.a)|(b.b)|((a.b)|(b.a)).((a.a|(b.b))*).((a.b)|(b.a)))*)");
+
+        Automato af = er.ERParaAFND("(a?)").minimizar();
+//        print_automato(af);
+        af = er.concatena("abc").minimizar();
+        Automato::print(af);
+
 }

@@ -42,7 +42,7 @@ VisaoAutomato::VisaoAutomato(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->ertext->setText("(ab)");
+    ui->ertext->setText("((ab)*)");
     connect(ui->OK, SIGNAL(clicked()), this, SLOT(ERParaAF()));
 
     connect(ui->determinizar, SIGNAL(clicked()), this, SLOT(determinizar()));
@@ -128,15 +128,18 @@ void VisaoAutomato::diferenca(){
     for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
         Estado * e = *iterador;
 
-        if(af.getInicial()->nome().compare(e->nome()) == 0){
+        if(af.getInicial() == e && finais.find(e) == finais.end()){
             string nome = "->";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;
-        }
-
-        if(finais.find(e) != finais.end()){
+        }else if(finais.find(e) != finais.end() && !(af.getInicial() == e)){
             string nome = "*";
+            nome.append(e->nome());
+            nomesEstados << nome.c_str();
+            continue;
+        }else if(af.getInicial() == e && finais.find(e) != finais.end()){
+            string nome = "->*";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;
@@ -215,15 +218,18 @@ void VisaoAutomato::interseccao(){
     for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
         Estado * e = *iterador;
 
-        if(af.getInicial()->nome().compare(e->nome()) == 0){
+        if(af.getInicial() == e && finais.find(e) == finais.end()){
             string nome = "->";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;
-        }
-
-        if(finais.find(e) != finais.end()){
+        }else if(finais.find(e) != finais.end() && !(af.getInicial() == e)){
             string nome = "*";
+            nome.append(e->nome());
+            nomesEstados << nome.c_str();
+            continue;
+        }else if(af.getInicial() == e && finais.find(e) != finais.end()){
+            string nome = "->*";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;
@@ -313,15 +319,18 @@ void VisaoAutomato::minimizar(){
     for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
         Estado * e = *iterador;
 
-        if(minimo.getInicial()->nome().compare(e->nome()) == 0){
+        if(minimo.getInicial() == e && finais.find(e) == finais.end()){
             string nome = "->";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;
-        }
-
-        if(finais.find(e) != finais.end()){
+        }else if(finais.find(e) != finais.end() && !(minimo.getInicial() == e)){
             string nome = "*";
+            nome.append(e->nome());
+            nomesEstados << nome.c_str();
+            continue;
+        }else if(minimo.getInicial() == e && finais.find(e) != finais.end()){
+            string nome = "->*";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;
@@ -387,15 +396,18 @@ void VisaoAutomato::determinizar(){
     for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
         Estado * e = *iterador;
 
-        if(afnd.getInicial()->nome().compare(e->nome()) == 0){
+        if(afd.getInicial() == e && finais.find(e) == finais.end()){
             string nome = "->";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;
-        }
-
-        if(finais.find(e) != finais.end()){
+        }else if(finais.find(e) != finais.end() && !(afd.getInicial() == e)){
             string nome = "*";
+            nome.append(e->nome());
+            nomesEstados << nome.c_str();
+            continue;
+        }else if(afd.getInicial() == e && finais.find(e) != finais.end()){
+            string nome = "->*";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;
@@ -464,16 +476,18 @@ void VisaoAutomato::ERParaAF(){
     for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
         Estado * e = *iterador;
 
-        if(afnd.getInicial()->nome().compare(e->nome()) == 0){
+        if(afnd.getInicial() == e && finais.find(e) == finais.end()){
             string nome = "->";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;
-        }
-
-        Estado * final = *finais.begin();
-        if(e->nome().compare(final->nome()) == 0){
+        }else if(finais.find(e) != finais.end() && !(afnd.getInicial() == e)){
             string nome = "*";
+            nome.append(e->nome());
+            nomesEstados << nome.c_str();
+            continue;
+        }else if(afnd.getInicial() == e && finais.find(e) != finais.end()){
+            string nome = "->*";
             nome.append(e->nome());
             nomesEstados << nome.c_str();
             continue;

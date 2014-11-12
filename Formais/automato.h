@@ -22,8 +22,8 @@ public:
     /*! \brief Método usado para exibir uma representação visual do automato em console
      *
      */
-    void print(Automato af);
-    /*! \brief Método dentro do método listar_sentenca
+    static void print(Automato af);
+    /*! \brief Utilizado dentro do método listar_sentenca
      *
      */
     bool verifica_sentenca(string s);
@@ -115,7 +115,6 @@ public:
      */
     void add(Estado *e);
 
-    set<string> listar_sentencas();
     /*! \brief Retorna o conjunto de todos os estados do Automato
      *
      */
@@ -133,6 +132,31 @@ public:
      *
      */
     Estado* getInicial();
+
+    /*! \brief Retorna Automato que correspondente à união de Automato a e Automato b
+     *
+     */
+    static Automato uniao_simples(Automato a, Automato b);
+    /*! \brief Retorna Automato que correspondente à concatenação de Automato a e Automato b
+     *
+     */
+    static Automato concatena(Automato a, Automato b);
+    /*! \brief Retorna Automato que correspondente ao Automato a aplicado da operação fechamento (*)
+     *
+     */
+    static Automato fechamento(Automato a);
+    /*! \brief Retorna Automato que correspondente ao Automato a aplicado da operação opcional (?)
+     *
+     */
+    static Automato interrogacao(Automato a);
+    /*! \brief Retorna Automato que reconhece o simbolo em s
+     *
+     */
+    static Automato menor_sentenca(string s);
+    /*! \brief Renomeia todos os estados do automato segundo padrão Q0, Q1, Q2...
+     *
+     */
+    renomear_estados();
     };
 
 #endif

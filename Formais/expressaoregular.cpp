@@ -34,6 +34,9 @@ string ExpressaoRegular::preProcessar(char * er){
         }else if(anterior == ('?') && atual != NULL && atual != '|' && atual != ')' && atual != '*' && atual != '?'){
             novaER.insert(pos, 1,concatenacao);
             pos++;
+        }else if((isalpha(anterior) || isdigit(anterior)) && atual == '('){
+            novaER.insert(pos, 1,concatenacao);
+            pos++;
         }
         pos++;
     }
@@ -46,153 +49,113 @@ Automato ExpressaoRegular::ERParaAFND(string ER){
     std::copy(ER.begin(), ER.end(), writable);
     writable[ER.size()] = '\0';
 
-    ER = preProcessar(writable);
+    ER = preProcessar(ER.c_str());
 
-    writable = new char[ER.size() + 1];
-    std::copy(ER.begin(), ER.end(), writable);
-    writable[ER.size()] = '\0';
+    return  _ERParaAFND(ER);
+}
 
-    _ERParaAFND(1,0,writable);
+Automato ExpressaoRegular::_ERParaAFND(string er){
 
-    delete writable;
+    stack<Operador> operadores;
+    stack<Automato> operandos;
 
-    Automato af;
+    for(string::iterator it = er.begin(); it != er.end(); ++it) {
+        char atual = *it;
 
-    unordered_map<string, Estado*> nomeParaEstado;
+        if(atual == Fechamento){
+            Automato a = operandos.top();
 
-    set<Simbolo> alfabeto;
-    Estado *final = new Estado("A");
-    for(int i=0;i<pos;i=i+3){
-        char c = ret[i] + 64;
-        string nome(1,c);
+            operandos.pop();
+            operandos.push(Automato::fechamento(a));
+        }else if(atual == Opcional){
+            Automato a = operandos.top();
 
-        Estado * e = new Estado(nome);
+            operandos.pop();
+            operandos.push(Automato::interrogacao(a));
+        }else if(atual == Concatenacao || atual == Uniao || atual == Opcional || atual == '('){
+            operadores.push(atual);
+        }else{
 
-        if(nome.compare(final->nome()) > 0)
-            final = e;
+            if(isalpha(atual) || isdigit(atual)){
+                operandos.push(Automato::menor_sentenca(string(1,atual)));
+            }else{
+                char operadorTopo = operadores.top();
+                operadores.pop();
 
-        af.add(e);
+                if(operadorTopo == '('){
+                    operadores.pop();
+                    continue;
+                }
 
-        c = ret[i+2] + 64;
-        string nome2(1,c);
+                Automato a, b;
 
-        e = new Estado(nome2);
+                if(operadorTopo == Concatenacao){
+                    a = operandos.top();
+                    operandos.pop();
+                    b = operandos.top();
+                    operandos.pop();
 
-        if(nome2.compare(final->nome()) > 0)
-            final = e;
+                    Automato resultado = Automato::concatena(b,a);
+                    resultado.renomear_estados();
+                    operandos.push(resultado);
+                }else if(operadorTopo == Uniao){
+                    a = operandos.top();
+                    operandos.pop();
+                    b = operandos.top();
+                    operandos.pop();
 
-        af.add(e);
-
-        string simbolo = string(1,ret[i+1]);
-        if(simbolo.compare(string(1,'&')) != 0)
-            alfabeto.insert(simbolo);
-    }
-
-    set<Estado*> estados = af.getEstados();
-
-    for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
-        Estado * e = *iterador;
-
-        nomeParaEstado.insert({e->nome(), e});
-    }
-    Estado * e;
-    for(auto iterador = estados.begin(); iterador != estados.end();iterador++){
-        e = (*iterador);
-
-        for(int i=0;i<pos;i=i+3){
-            //printf("%d     --%c-->      %d\n",ret[i],ret[i+1],ret[i+2]);
-            char c = ret[i+2] + 64;
-            string nome(1,c);
-            Estado * para = nomeParaEstado.find(nome)->second;
-
-            char c2 = ret[i] + 64;
-            string nome2(1,c2);
-            if(e->nome().compare(nome2) == 0){
-                char simbolo = ret[i+1];
-                e->insereTransicao(string(1,simbolo), para);
+                    Automato resultado = Automato::uniao_simples(a,b);
+                    resultado.renomear_estados();
+                    operandos.push(resultado);
+                }
+                operadores.pop();
             }
 
         }
     }
-    Estado * inicial = nomeParaEstado.find("A")->second;
-
-    set<Estado*> finais;
-    finais.insert(final);
-
-    return Automato(af.getEstados(), alfabeto, inicial, finais);
+    Automato af = operandos.top();
+    af.renomear_estados();
+    return af;
 }
 
-void ExpressaoRegular::_ERParaAFND(int st,int p,char *s){
+Automato ExpressaoRegular::concatena(string simbolos){
 
-    int i,sp,fs[15],fsc=0;
-    sp=st;pos=p;sc=st;
-    while(*s!=NULL)
-    {
-        if(isalpha(*s))
-        {
-            ret[pos++]=sp;
-            ret[pos++]=*s;
-            ret[pos++]=++sc;
-        }
-        if(*s==concatenacao)
-        {
-            sp=sc;
-            ret[pos++]=sc;
-            ret[pos++]='&';
-            ret[pos++]=++sc;
-            sp=sc;
-        }
-        if(*s=='?')
-        {
-            ret[pos++]=sp;
-            ret[pos++]='&';
-            ret[pos++]=sc;
-        }
-        if(*s=='|')
-        {
-            sp=st;
-            fs[fsc++]=sc;
-        }
-        if(*s=='*')
-        {
-            ret[pos++]=sc;
-            ret[pos++]='&';
-            ret[pos++]=sp;
-            ret[pos++]=sp;
-            ret[pos++]='&';
-            ret[pos++]=sc;
-        }
-        if (*s=='(')
-        {
-            char ps[50];
-            int i=0,flag=1;
-            s++;
-            while(flag!=0)
-            {
-                ps[i++]=*s;
-                if (*s=='(')
-                    flag++;
-                if (*s==')')
-                    flag--;
-                s++;}
-            ps[--i]='\0';
-            _ERParaAFND(sc,pos,ps);
-            s--;
-        }
-        s++;
-    }
-    sc++;
-    for(i=0;i<fsc;i++)
-    {
-        ret[pos++]=fs[i];
-        ret[pos++]='&';
-        ret[pos++]=sc;
-    }
-    ret[pos++]=sc-1;
-    ret[pos++]='&';
-    ret[pos++]=sc;
+    simbolos = preProcessar(simbolos.c_str());
 
-    for (int i = 0; i < ret.size(); ++i) {
-        cout << ret[i] << endl;
+    stack<Automato> operandos;
+
+    for(string::iterator it = simbolos.begin(); it != simbolos.end(); ++it) {
+        char atual = *it;
+
+        if(isalpha(atual) || isdigit(atual)){
+            operandos.push(Automato::menor_sentenca(string(1,atual)));
+        }
     }
+
+    while(operandos.size() != 1){
+
+        Automato a, b;
+
+        a = operandos.top();
+        operandos.pop();
+        b = operandos.top();
+        operandos.pop();
+
+        Automato resultado = Automato::concatena(b,a);
+        resultado.renomear_estados();
+        operandos.push(resultado);
+    }
+    Automato af = operandos.top();
+    af.renomear_estados();
+    return af;
+}
+
+string ExpressaoRegular::subExpressao(string expressao){
+    string retorno = "";
+    for(string::iterator it = expressao.begin()+1; it != expressao.end()-1; ++it) {
+        char atual = *it;
+
+        retorno.append(atual);
+    }
+    return retorno;
 }
